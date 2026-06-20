@@ -1,4 +1,4 @@
-# Palms Technology Group — Source Code Rules
+# Cobalt Hospitality Tech — Source Code Rules
 # Subdirectory override for /src
 # Inherits all rules from root CLAUDE.md
 # Only add src-specific rules here — do not repeat root rules
@@ -28,7 +28,7 @@ Never put database queries in route handlers.
 Follow this order strictly — enforced by isort:
 1. Standard library
 2. Third-party packages
-3. Internal palms packages
+3. Internal cobalt packages
 4. Relative imports
 
 ### Connector Modules (/src/connectors/)
@@ -39,7 +39,7 @@ Extra rules apply:
 - All external API calls must have explicit timeout values
 - Retry logic required on all connector calls — use tenacity
 - Circuit breaker pattern required for production connectors
-- Never raise raw vendor exceptions — wrap in PalmsConnectorError
+- Never raise raw vendor exceptions — wrap in CobaltConnectorError
 - Mock responses required in /src/connectors/mocks/ for every endpoint
 
 ### Agent Modules (/src/agents/)
@@ -54,7 +54,7 @@ Extra rules apply:
 - No guest PII in Claude conversation context beyond session scope
 
 ### Models (/src/models/)
-- All models inherit from PalmsBaseModel
+- All models inherit from CobaltBaseModel
 - Currency fields: integer cents only — field name must end in _cents
 - DateTime fields: UTC only — field name must end in _utc
 - PII fields: must be marked with pii=True in field metadata

@@ -1,4 +1,4 @@
-# Palms Technology Group — Documentation Rules
+# Cobalt Hospitality Tech — Documentation Rules
 # Subdirectory override for /docs
 # Inherits all rules from root CLAUDE.md
 
@@ -67,7 +67,7 @@ Every public API endpoint must have:
 - Rate limit information
 
 New endpoints must be documented before or in the same PR as the code.
-Undocumented endpoints will be rejected in /palm-review.
+Undocumented endpoints will be rejected in /cobalt-review.
 
 ---
 

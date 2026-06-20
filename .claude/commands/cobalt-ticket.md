@@ -1,16 +1,16 @@
-# /palm-ticket — Generate Ticket from Description
-# Palms Technology Group
+# /cobalt-ticket — Generate Ticket from Description
+# Cobalt Hospitality Tech
 # Generates a properly formatted ticket for Jira or GitHub Issues.
-# Usage: /palm-ticket <description of work>
+# Usage: /cobalt-ticket <description of work>
 #
 # CONFIG — set for your environment:
 # TICKET_SYSTEM: jira
-# JIRA_PROJECT_KEY: PALMS
-# GITHUB_REPO: jaxent/palms-tech-claude-config
+# JIRA_PROJECT_KEY: COBALT
+# GITHUB_REPO: jaxent/cobalt-tech-claude-config
 #
 # Claude will format output for the configured ticket system.
 
-Generate a ticket for the Palms Technology Group engineering backlog.
+Generate a ticket for the Cobalt Hospitality Tech engineering backlog.
 Check the CONFIG section above and format output accordingly:
 
 - If TICKET_SYSTEM is "jira" — format as a Jira story with all fields
@@ -60,7 +60,7 @@ Format: Given/When/Then where appropriate.
 - [ ] Code complete and reviewed
 - [ ] Unit tests passing with 80%+ coverage
 - [ ] Integration tests passing (if PMS connector touched)
-- [ ] /palm-review clean
+- [ ] /cobalt-review clean
 - [ ] GitHub doc updated if public API changed
 - [ ] Confluence ADR created if architecture decision made
 - [ ] Deployed to staging and smoke tested
@@ -97,7 +97,7 @@ needs-github-doc, needs-confluence-adr, performance, security, tech-debt
 - Documentation needed
 
 ## Definition of Done
-- [ ] Code complete and /palm-review clean
+- [ ] Code complete and /cobalt-review clean
 - [ ] Tests passing at 80%+ coverage
 - [ ] Docs updated (GitHub and/or Confluence as appropriate)
 - [ ] Staging verified

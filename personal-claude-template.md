@@ -1,5 +1,5 @@
 # Personal Claude Code Configuration Template
-# Palms Technology Group
+# Cobalt Hospitality Tech
 #
 # INSTRUCTIONS:
 # 1. Copy this file to ~/.claude/CLAUDE.md on your machine
@@ -42,7 +42,7 @@
 1. Check Jira for ticket details first
 2. Create feature branch from main
 3. Write tests before implementation (TDD)
-4. Run /palm-review before PR
+4. Run /cobalt-review before PR
 
 ### Debugging
 - Show me the error and relevant code together

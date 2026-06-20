@@ -1,4 +1,4 @@
-# Palms Technology Group — Claude Code Configuration
+# Cobalt Hospitality Tech — Claude Code Configuration
 # Team/Project Level | Committed to repo | Read-only for most engineers
 # Last updated: 2026-06-15
 # Maintainers: Lead Engineering (@jaxent)
@@ -7,7 +7,7 @@
 
 ## About This Project
 
-Palms Technology Group builds and maintains hospitality technology systems
+Cobalt Hospitality Tech builds and maintains hospitality technology systems
 for Grand Palms Resort properties including hotel management, reservations,
 guest experience, timeshare operations, and cruise line integrations.
 
@@ -68,12 +68,12 @@ Primary systems:
 ## MCP Server Connections
 
 ### Active (connected)
-- **palms-hotel-mcp** — Grand Palms PMS data (reservations, inventory)
+- **cobalt-hotel-mcp** — Grand Palms PMS data (reservations, inventory)
 
 ### Planned (not yet connected — do not attempt to use)
-- **palms-loyalty-mcp** — Loyalty platform (profiles, points, tiers)
-- **palms-jira-mcp** — Ticket creation and project tracking
-- **palms-github-mcp** — PR creation, code review, branch management
+- **cobalt-loyalty-mcp** — Loyalty platform (profiles, points, tiers)
+- **cobalt-jira-mcp** — Ticket creation and project tracking
+- **cobalt-github-mcp** — PR creation, code review, branch management
 
 ---
 
@@ -140,7 +140,7 @@ Direct execution is fine for:
 - All PRs require at least 1 reviewer
 - PRs touching PMS connectors require 2 reviewers
 - Link Jira ticket in every PR description
-- Run /palm-review before submitting any PR
+- Run /cobalt-review before submitting any PR
 - Squash commits on merge to main
 
 ---
@@ -150,7 +150,7 @@ Direct execution is fine for:
 Format: type(scope): short description
 
 Body (optional) — what and why, not how
-Footer: TICKET: PALMS-1234
+Footer: TICKET: COBALT-1234
 
 Types: feat, fix, refactor, chore, test, docs
 Scopes: pms, loyalty, reservations, guest-api, cruise, infra
@@ -162,7 +162,7 @@ Example:
     Prevents duplicate reservations on network retry.
     Idempotency key stored in Redis with 24hr TTL.
 
-    TICKET: PALMS-892
+    TICKET: COBALT-892
 	
 ---
 
@@ -233,6 +233,6 @@ Example:
 ## Contact and Escalation
 
 - Engineering Lead: @jaxent
-- PMS Integration questions: #palms-pms-integration (Slack)
-- Security issues: security@palmstech.com (do not post in Slack)
+- PMS Integration questions: #cobalt-pms-integration (Slack)
+- Security issues: security@cobalthospitalitytech.com (do not post in Slack)
 - After-hours production issues: PagerDuty escalation policy

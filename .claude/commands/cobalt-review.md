@@ -1,11 +1,11 @@
-# /palm-review — Pre-PR Code Review
-# Palms Technology Group
+# /cobalt-review — Pre-PR Code Review
+# Cobalt Hospitality Tech
 # Run this before submitting any pull request.
-# Usage: /palm-review
+# Usage: /cobalt-review
 # Claude will review all staged/modified files automatically.
 
-Review the current changes in this branch as a senior Palms Technology 
-Group engineer would. Work through each section below systematically.
+Review the current changes in this branch as a senior Cobalt Hospitality 
+Tech engineer would. Work through each section below systematically.
 
 ## 1. Security Check (BLOCKING — fix before PR)
 

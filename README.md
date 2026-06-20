@@ -1,7 +1,7 @@
-# Palms Technology Group — Claude Code Configuration Kit
+# Cobalt Hospitality Tech — Claude Code Configuration Kit
 
 A production-grade Claude Code configuration for hospitality technology 
-development teams. Built and maintained by Palms Technology Group.
+development teams. Built and maintained by Cobalt Hospitality Tech.
 
 ## What's Included
 
@@ -15,13 +15,13 @@ development teams. Built and maintained by Palms Technology Group.
 
 ## Directory Structure
 
-- palms-tech/
+- cobalt-tech/
 - CLAUDE.md                    ← Team standards (commit this)
 - .claude/
 - commands/
-- palm-review.md       ← /palm-review
-- palm-ticket.md       ← /palm-ticket
-- palm-deploy-check.md ← /palm-deploy-check
+- cobalt-review.md       ← /cobalt-review
+- cobalt-ticket.md       ← /cobalt-ticket
+- cobalt-deploy-check.md ← /cobalt-deploy-check
 - src/
     - CLAUDE.md                ← Source code specific rules
 - docs/

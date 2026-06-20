@@ -1,11 +1,11 @@
-# /palm-deploy-check — Pre-Deployment Verification
-# Palms Technology Group
+# /cobalt-deploy-check — Pre-Deployment Verification
+# Cobalt Hospitality Tech
 # Run before deploying any change to staging or production.
-# Usage: /palm-deploy-check
+# Usage: /cobalt-deploy-check
 # Claude will analyze the diff against main and verify deployment readiness.
 
 Perform a pre-deployment verification for the current branch as a 
-Palms Technology Group senior engineer preparing a production deployment.
+Cobalt Hospitality Tech senior engineer preparing a production deployment.
 
 ## 1. Change Impact Assessment
 
@@ -55,7 +55,7 @@ Based on the changes, describe:
 ## 4. Deployment Checklist
 
 - [ ] All tests passing on CI
-- [ ] /palm-review completed with no blocking issues
+- [ ] /cobalt-review completed with no blocking issues
 - [ ] Staging deployment successful
 - [ ] Smoke tests passing on staging
 - [ ] Database migration tested on staging
