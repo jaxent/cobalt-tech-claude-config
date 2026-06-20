@@ -2,6 +2,7 @@
 # Cobalt Hospitality Tech
 #
 # INSTRUCTIONS:
+# 0. Source repo: https://github.com/jaxent/cobalt-tech-claude-config
 # 1. Copy this file to ~/.claude/CLAUDE.md on your machine
 # 2. Customize the sections below to your preferences
 # 3. NEVER commit this file — it stays on your machine only
