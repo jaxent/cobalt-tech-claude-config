@@ -121,7 +121,7 @@ def pre_response_hook(guest_message: str, reservation: dict = None) -> dict:
         }
 
     # Check 3 — Reservation-based criteria (if we have reservation data)
-    if reservation and not reservation.get("isError"):
+    if reservation and "error_code" not in reservation:
 
         # Room type mismatch with special request on file
         # Only escalate if guest is actively complaining —
@@ -342,7 +342,7 @@ Do not attempt to resolve the issue yourself."""
                     # reservation-based hook checks
                     result_dict = json.loads(result_json)
                     if (block.name == "get_reservation_by_room"
-                            and not result_dict.get("isError")):
+                            and "error_code" not in result_dict):
                         res_escalation = pre_response_hook(
                             guest_message, result_dict
                         )
@@ -391,9 +391,9 @@ async def execute_tool(session: ClientSession, tool_name: str, tool_input: dict)
         return result.content[0].text
     except Exception as e:
         return json.dumps({
-            "isError": True,
-            "errorCategory": "tool_error",
-            "isRetryable": True,
+            "error_code": "TOOL_ERROR",
+            "message": f"Tool execution failed: {str(e)}",
+            "is_retryable": True,
             "context": str(e)
         })
        

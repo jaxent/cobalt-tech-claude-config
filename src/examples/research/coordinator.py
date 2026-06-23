@@ -72,19 +72,20 @@ def dispatch_subagents_parallel(tasks: list) -> list:
             try:
                 result = future.result()
                 results[index] = result
-                status = "✓" if not result.get("isError") else "✗"
+                status = "✓" if "error_code" not in result else "✗"
                 print(f"  [{status}] {task['research_topic']} complete")
 
             except Exception as e:
                 # Thread-level exception — subagent crashed entirely
                 print(f"  [✗] {task['research_topic']} crashed: {str(e)}")
                 results[index] = {
-                    "isError": True,
                     "task_id": task["task_id"],
                     "agent_id": task["agent_id"],
                     "research_topic": task["research_topic"],
-                    "errorCategory": "subagent_crash",
-                    "isRetryable": True,
+                    "error_code": "SUBAGENT_CRASH",
+                    "message": f"Subagent for {task['research_topic']} "
+                               f"crashed during execution",
+                    "is_retryable": True,
                     "context": f"Subagent crashed with exception: {str(e)}",
                     "completedSteps": [],
                     "partialData": None
@@ -109,7 +110,7 @@ def handle_failures(results: list, tasks: list) -> list:
     """
     failed_indices = [
         i for i, r in enumerate(results)
-        if r and r.get("isError") and r.get("isRetryable")
+        if r and "error_code" in r and r.get("is_retryable")
     ]
 
     if not failed_indices:
@@ -123,13 +124,13 @@ def handle_failures(results: list, tasks: list) -> list:
 
         retry_result = run_subagent(task)
 
-        if not retry_result.get("isError"):
+        if "error_code" not in retry_result:
             print(f"  Retry succeeded: {task['research_topic']}")
             results[i] = retry_result
         else:
             print(f"  Retry failed: {task['research_topic']} — "
                   f"marking as unrecoverable")
-            results[i]["isRetryable"] = False
+            results[i]["is_retryable"] = False
             results[i]["context"] += " (retry also failed)"
 
     return results
@@ -152,8 +153,8 @@ def evaluate_results(results: list) -> dict:
     """
     Evaluates the set of results and determines synthesis strategy.
     """
-    successful = [r for r in results if not r.get("isError")]
-    failed = [r for r in results if r.get("isError")]
+    successful = [r for r in results if "error_code" not in r]
+    failed = [r for r in results if "error_code" in r]
 
     failed_critical = [
         r for r in failed
@@ -218,7 +219,7 @@ def synthesize_findings(
     # Only successful findings, with provenance preserved
     research_summary = []
     for r in results:
-        if not r.get("isError"):
+        if "error_code" not in r:
             findings = r.get("findings", {})
             research_summary.append({
                 "topic": r["research_topic"],
@@ -356,7 +357,6 @@ Provide a clear, actionable recommendation the GM can act on."""
 
         if tool_block:
             return {
-                "isError": False,
                 "synthesis": tool_block.input
             }
 
@@ -370,8 +370,8 @@ Provide a clear, actionable recommendation the GM can act on."""
         })
 
     return {
-        "isError": True,
-        "errorCategory": "synthesis_failed",
+        "error_code": "SYNTHESIS_FAILED",
+        "message": "Failed to synthesize findings after 3 attempts",
         "context": "Coordinator failed to synthesize findings after 3 attempts"
     }
 
@@ -410,9 +410,9 @@ def build_audit_trail(
                 "task_id": r.get("task_id"),
                 "agent_id": r.get("agent_id"),
                 "topic": r.get("research_topic"),
-                "status": "failed" if r.get("isError") else "success",
+                "status": "failed" if "error_code" in r else "success",
                 "confidence": r.get("findings", {}).get("confidence")
-                              if not r.get("isError") else None,
+                              if "error_code" not in r else None,
                 "provenance": r.get("provenance", {})
             }
             for r in results
@@ -458,6 +458,9 @@ def run_research_coordinator(
 
     if evaluation["strategy"] == "escalate":
         print(f"\n[ESCALATION] {evaluation['reason']}")
+        # DEFERRED MIGRATION: this escalation dict still uses the legacy
+        # isError convention (no error_code). Detected by the legacy check
+        # in print_gm_report (L500). Revisit per migration plan.
         return {
             "isError": True,
             "escalate_to_human": True,
@@ -471,7 +474,10 @@ def run_research_coordinator(
         results, evaluation, gm_question, property_context
     )
 
-    if synthesis.get("isError"):
+    if "error_code" in synthesis:
+        # DEFERRED MIGRATION: this propagation dict still uses the legacy
+        # isError convention (no error_code). Detected by the legacy check
+        # in print_gm_report (L500). Revisit per migration plan.
         return {
             "isError": True,
             "context": synthesis.get("context"),
@@ -482,7 +488,6 @@ def run_research_coordinator(
     audit = build_audit_trail(tasks, results, evaluation, synthesis)
 
     return {
-        "isError": False,
         "synthesis": synthesis["synthesis"],
         "evaluation": evaluation,
         "audit": audit
@@ -497,6 +502,11 @@ def run_research_coordinator(
 def print_gm_report(result: dict):
     """Prints formatted GM recommendation report."""
 
+    # DEFERRED MIGRATION: kept on the legacy isError check intentionally.
+    # The two top-level error dicts in run_research_coordinator (escalate /
+    # synthesis-propagation) still use isError and have no error_code, so this
+    # consumer must detect them via isError. Migrate together when those dicts
+    # are revisited. Success results no longer carry isError (absent → falsy).
     if result.get("isError"):
         print(f"\n❌ RESEARCH FAILED")
         print(f"Reason: {result.get('reason') or result.get('context')}")

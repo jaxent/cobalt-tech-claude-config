@@ -148,14 +148,13 @@ def get_reservation(room_number: str) -> str:
     """
     if room_number not in RESERVATIONS:
         return json.dumps({
-            "isError": True,
-            "errorCategory": "not_found",
-            "isRetryable": False,
+            "error_code": "NOT_FOUND",
+            "message": f"No reservation found for room {room_number}",
+            "is_retryable": False,
             "context": f"No active reservation for room {room_number}"
         })
 
     return json.dumps({
-        "isError": False,
         **RESERVATIONS[room_number]
     })
 
@@ -173,21 +172,19 @@ def get_room_availability(room_type: Optional[str] = None) -> str:
         count = ROOM_INVENTORY.get(key)
         if count is None:
             return json.dumps({
-                "isError": True,
-                "errorCategory": "invalid_room_type",
-                "isRetryable": False,
+                "error_code": "INVALID_ROOM_TYPE",
+                "message": f"Invalid room type: {room_type}",
+                "is_retryable": False,
                 "context": f"Unknown room type: {room_type}. "
                            f"Valid types: king, king_suite, "
                            f"double_double, ocean_view_king"
             })
         return json.dumps({
-            "isError": False,
             "room_type": room_type,
             "available": count
         })
 
     return json.dumps({
-        "isError": False,
         **ROOM_INVENTORY
     })
 
@@ -204,21 +201,19 @@ def get_resort_info(category: Optional[str] = None) -> str:
         info = RESORT_INFO.get(category.lower())
         if not info:
             return json.dumps({
-                "isError": True,
-                "errorCategory": "invalid_category",
-                "isRetryable": False,
+                "error_code": "INVALID_CATEGORY",
+                "message": f"Invalid resort info category: {category}",
+                "is_retryable": False,
                 "context": f"Unknown category: {category}. "
                            f"Valid: pool, restaurant, spa"
             })
         info_dict = info if isinstance(info, dict) else {"value": info}
         return json.dumps({
-            "isError": False,
             "category": category,
             **info_dict
         })
 
     return json.dumps({
-        "isError": False,
         **RESORT_INFO
     })
 
@@ -234,14 +229,13 @@ def get_guest_profile(loyalty_number: str) -> str:
     profile = GUEST_PROFILES.get(loyalty_number)
     if not profile:
         return json.dumps({
-            "isError": True,
-            "errorCategory": "not_found",
-            "isRetryable": False,
+            "error_code": "NOT_FOUND",
+            "message": f"No loyalty profile found for {loyalty_number}",
+            "is_retryable": False,
             "context": f"No loyalty profile found for {loyalty_number}"
         })
 
     return json.dumps({
-        "isError": False,
         **profile
     })
 

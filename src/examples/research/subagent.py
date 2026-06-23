@@ -190,7 +190,6 @@ If you are uncertain about specific data points, note it in confidence level."""
                       f"{total_output_tokens}out")
 
                 return {
-                    "isError": False,
                     "task_id": task_id,
                     "agent_id": agent_id,
                     "research_topic": topic,
@@ -251,12 +250,13 @@ If you are uncertain about specific data points, note it in confidence level."""
     print(f"  [{agent_id}] FAILED after {loop_count} loops")
 
     return {
-        "isError": True,
         "task_id": task_id,
         "agent_id": agent_id,
         "research_topic": topic,
-        "errorCategory": "research_failed",
-        "isRetryable": True,
+        "error_code": "RESEARCH_FAILED",
+        "message": f"Subagent {agent_id} failed to submit findings "
+                   f"after {loop_count} iterations",
+        "is_retryable": True,
         "context": f"Subagent {agent_id} failed to submit findings "
                    f"after {loop_count} iterations. "
                    f"Topic: {topic}",
@@ -311,7 +311,7 @@ if __name__ == "__main__":
 
     result = run_subagent(tasks[0])
 
-    if result["isError"]:
+    if "error_code" in result:
         print(f"\nFAILED: {result['context']}")
     else:
         findings = result["findings"]
