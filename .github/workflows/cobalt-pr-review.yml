@@ -1,0 +1,61 @@
+# ============================================================
+# Cobalt Hospitality Tech — Automated PR Review
+# Uses anthropics/claude-code-action@v1 (official Anthropic action)
+#
+# EXAM PATTERN: Claude Code non-interactive CI mode
+# The action handles installation, execution, and output.
+# CLAUDE.md is auto-loaded — hospitality rules apply automatically.
+# ============================================================
+
+name: Cobalt PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - 'CLAUDE.md'
+      - '.claude/**'
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  cobalt-review:
+    name: Cobalt Code Review
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Cobalt Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--max-turns 5 --model claude-sonnet-4-6"
+          prompt: |
+            You are running as part of the Cobalt Hospitality Tech CI pipeline.
+            Review this PR against our CLAUDE.md hospitality standards.
+
+            Run these checks:
+            1. Security (blocking): hardcoded secrets, PII in logs, SQL injection, PCI surface
+            2. Hospitality domain (blocking): currency as cents, UTC dates, idempotent reservations, no live PMS calls in tests
+            3. Code quality (warning): function length over 50 lines, error object shape, docstrings, type hints
+            4. Test coverage (warning): new code has tests, 80% coverage floor
+
+            Post a PR review comment with:
+            - Verdict: APPROVE, APPROVE WITH NOTES, or REQUEST CHANGES
+            - Blocking issues (must fix before merge)
+            - Warnings (should fix)
+            - Suggestions (optional)
+            - One sentence summary
