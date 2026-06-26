@@ -81,77 +81,49 @@ jobs:
             -- 'src/**' > pr_diff.txt
           echo "diff_lines=$(wc -l < pr_diff.txt)" >> $GITHUB_OUTPUT
 
-      # -------------------------------------------------------
+ # -------------------------------------------------------
       # Step 5 — Run Cobalt Review via Claude Code
-      #
-      # EXAM PATTERN: -p flag for non-interactive mode
-      # --output-format json for structured output
-      # --max-turns limits loop depth (cost control)
-      # CLAUDE.md is auto-loaded — hospitality rules apply
+      # Prompt is in a separate script to avoid YAML parsing issues
       # -------------------------------------------------------
       - name: Run Cobalt Review
         id: review
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          BASE_REF: ${{ github.base_ref }}
         run: |
-          REVIEW_OUTPUT=$(claude -p \
-            --output-format json \
-            --max-turns 3 \
-            --allowedTools "Read,Bash" \
-            "You are running as part of the Cobalt Hospitality Tech 
-            CI pipeline. Review the following PR diff against our 
-            CLAUDE.md standards.
-            
-            PR #${{ github.event.pull_request.number }}
-            Title: ${{ github.event.pull_request.title }}
-            Author: ${{ github.event.pull_request.user.login }}
-            Base branch: ${{ github.base_ref }}
-            
-            DIFF:
-            $(cat pr_diff.txt)
-            
-            Run the same checks as /cobalt-review:
-            1. Security (blocking): secrets, PII in logs, SQL injection,
-               PCI surface
-            2. Hospitality domain (blocking): currency as cents, UTC dates,
-               idempotent reservations, no live PMS calls in tests
-            3. Code quality (warning): function length, error object shape,
-               docstrings, type hints
-            4. Test coverage (warning): new code has tests, 80% floor
-            
-            Output a JSON object with this exact structure:
-            {
-              \"verdict\": \"APPROVE|APPROVE_WITH_NOTES|REQUEST_CHANGES\",
-              \"blocking_issues\": [],
-              \"warnings\": [],
-              \"suggestions\": [],
-              \"summary\": \"one sentence summary\"
-            }")
+          chmod +x .github/scripts/ci-review-prompt.sh
+          
+          REVIEW_OUTPUT=$(.github/scripts/ci-review-prompt.sh)
+          echo "review_output<<EOF" >> $GITHUB_OUTPUT
+          echo "$REVIEW_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          echo "review_output=$REVIEW_OUTPUT" >> $GITHUB_OUTPUT
-
-          # Extract verdict for step outcome
-          VERDICT=$(echo $REVIEW_OUTPUT | \
+          # Extract verdict
+          VERDICT=$(echo "$REVIEW_OUTPUT" | \
             python3 -c "
-            import sys, json
-            try:
-                data = json.load(sys.stdin)
-                # Handle nested result structure
-                if 'result' in data:
-                    content = data['result']
-                else:
-                    content = data
-                if isinstance(content, str):
-                    import re
-                    match = re.search(r'\{.*\}', content, re.DOTALL)
-                    if match:
-                        content = json.loads(match.group())
-                print(content.get('verdict', 'APPROVE_WITH_NOTES'))
-            except:
-                print('APPROVE_WITH_NOTES')
-            ")
+import sys, json, re
+content = sys.stdin.read()
+try:
+    data = json.loads(content)
+    if 'result' in data:
+        text = data['result']
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            inner = json.loads(match.group())
+            print(inner.get('verdict', 'APPROVE_WITH_NOTES'))
+        else:
+            print('APPROVE_WITH_NOTES')
+    else:
+        print(data.get('verdict', 'APPROVE_WITH_NOTES'))
+except:
+    print('APPROVE_WITH_NOTES')
+")
           echo "verdict=$VERDICT" >> $GITHUB_OUTPUT
-
+          echo "Verdict: $VERDICT"
+          
       # -------------------------------------------------------
       # Step 6 — Post review as PR comment
       # -------------------------------------------------------
