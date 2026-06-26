@@ -81,9 +81,8 @@ jobs:
             -- 'src/**' > pr_diff.txt
           echo "diff_lines=$(wc -l < pr_diff.txt)" >> $GITHUB_OUTPUT
 
- # -------------------------------------------------------
+      # -------------------------------------------------------
       # Step 5 — Run Cobalt Review via Claude Code
-      # Prompt is in a separate script to avoid YAML parsing issues
       # -------------------------------------------------------
       - name: Run Cobalt Review
         id: review
@@ -95,35 +94,16 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
         run: |
           chmod +x .github/scripts/ci-review-prompt.sh
-          
+
           REVIEW_OUTPUT=$(.github/scripts/ci-review-prompt.sh)
+
           echo "review_output<<EOF" >> $GITHUB_OUTPUT
           echo "$REVIEW_OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-          # Extract verdict
-          VERDICT=$(echo "$REVIEW_OUTPUT" | \
-            python3 -c "
-import sys, json, re
-content = sys.stdin.read()
-try:
-    data = json.loads(content)
-    if 'result' in data:
-        text = data['result']
-        match = re.search(r'\{.*\}', text, re.DOTALL)
-        if match:
-            inner = json.loads(match.group())
-            print(inner.get('verdict', 'APPROVE_WITH_NOTES'))
-        else:
-            print('APPROVE_WITH_NOTES')
-    else:
-        print(data.get('verdict', 'APPROVE_WITH_NOTES'))
-except:
-    print('APPROVE_WITH_NOTES')
-")
+          VERDICT=$(echo "$REVIEW_OUTPUT" | python3 .github/scripts/extract-verdict.py)
           echo "verdict=$VERDICT" >> $GITHUB_OUTPUT
-          echo "Verdict: $VERDICT"
-          
+          echo "Verdict: $VERDICT"      
       # -------------------------------------------------------
       # Step 6 — Post review as PR comment
       # -------------------------------------------------------
